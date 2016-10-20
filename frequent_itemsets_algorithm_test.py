@@ -16,12 +16,12 @@ class AprioriAlgorithmTests(unittest.TestCase):
 
         aprior_algorithm = AprioriAlgorithm()
         # Action
-        item_set_dictionary = aprior_algorithm \
-            .create_frequent_1_item_set(self.transaction_list)
+        result_dictionary = aprior_algorithm \
+            .create_frequent_1_item_set(self.transaction_list, 0.5)
 
         # Assert
-        result_dictionary = {1: 3, 2: 6, 3: 4, 4: 5}
-        self.assertTrue(item_set_dictionary, result_dictionary)
+        expected_dictionary = {1: 3, 2: 6, 3: 4, 4: 5}
+        self.assertTrue(result_dictionary, expected_dictionary)
 
 
 test_suit = unittest.TestLoader().loadTestsFromTestCase(AprioriAlgorithmTests)
