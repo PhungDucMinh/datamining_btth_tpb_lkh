@@ -1,6 +1,6 @@
 import unittest
-from aprioralgorithm import AprioriItem
-from aprioralgorithm import AprioriItemSet
+from apriori_algorithm import AprioriItem
+from apriori_algorithm import AprioriItemSet
 
 
 class AprioriAlgorithmTests(unittest.TestCase):
