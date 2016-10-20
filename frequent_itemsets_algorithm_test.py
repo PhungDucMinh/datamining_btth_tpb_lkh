@@ -1,6 +1,5 @@
 import unittest
-from apriori_algorithm import AprioriItem
-from apriori_algorithm import AprioriItemSet
+from apriori_algorithm import AprioriAlgorithm
 
 
 class AprioriAlgorithmTests(unittest.TestCase):
@@ -13,17 +12,12 @@ class AprioriAlgorithmTests(unittest.TestCase):
         self.transaction_list = None
 
     def test_determine_set_of_frequent_1_item_sets(self):
-
         # Arrange
-        item_set_dictionary = {}
 
+        aprior_algorithm = AprioriAlgorithm()
         # Action
-        for transaction in self.transaction_list:
-            for item in transaction:
-                if not item_set_dictionary.has_key(item):
-                    item_set_dictionary[item] = 1
-                else:
-                    item_set_dictionary[item] += 1
+        item_set_dictionary = aprior_algorithm \
+            .create_frequent_1_item_set(self.transaction_list)
 
         # Assert
         result_dictionary = {1: 3, 2: 6, 3: 4, 4: 5}
