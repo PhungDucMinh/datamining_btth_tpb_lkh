@@ -12,10 +12,11 @@ class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
 
         for transaction in transaction_list:
             for item in transaction:
-                if not item in item_set_dictionary:
-                    item_set_dictionary[item] = 1
+                key = str((item))
+                if not key in item_set_dictionary:
+                    item_set_dictionary[key] = 1
                 else:
-                    item_set_dictionary[item] += 1
+                    item_set_dictionary[key] += 1
 
         return item_set_dictionary
 
