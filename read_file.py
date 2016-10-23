@@ -41,4 +41,3 @@ class ReadData:
 
 data = ReadData.read_as_number("retail.dat", "r")
 data2 = ReadData.read_as_string("retail.dat", "r")
-print data
