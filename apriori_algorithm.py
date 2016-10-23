@@ -30,8 +30,17 @@ class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
 
         return item_set_dictionary
 
-    def candidate_generate(self, transaction_list, dictionary, minsup):
-        pass
+    @staticmethod
+    def candidate_generate_join_step(itemsets_list):
+        generated_itemsets_list = list()
+        for index1, tupple1 in enumerate(itemsets_list):
+            for index2, tupple2 in enumerate(itemsets_list):
+                if index2 > index1:
+                    # Two sets differ last element
+                    if tupple1[len(tupple1) - 1] != tupple2[len(tupple2) - 1]:
+                        generated_itemsets_list.append(tupple1 + (tupple2[len(tupple2) - 1],))
+        return generated_itemsets_list
 
-    def candidate_generate_join(self, dictionary):
+    # Implement here!
+    def candidate_generate_pruning_step(self, dictionary):
         pass
