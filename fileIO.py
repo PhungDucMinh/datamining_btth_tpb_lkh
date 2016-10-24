@@ -59,7 +59,11 @@ class FileIO:
         # Add to transaction
         return tuple(numbers)
 
-
+    @staticmethod
+    def write(file_name, mode, content):
+        file_output = open(file_name, mode)
+        file_output.write(content)
+        file_output.close()
 """
 data = ReadData.read_as_number_list_type("retail.dat", "r")
 data2 = ReadData.read_as_string_tupple_type("retail.dat", "r")
