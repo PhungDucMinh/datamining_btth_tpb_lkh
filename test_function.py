@@ -1,3 +1,5 @@
-dictionary = { (1,2,3): 10, (1,3,4): 6, (1,2,4) : 7}
-for key,value in sorted(dictionary.iteritems()):
-    print key,value
+from fileIO import FileIO
+from apriori_algorithm import AprioriAlgorithm
+transaction = FileIO.read_as_number_list_type("retail.dat", "r")
+result = AprioriAlgorithm.run(transaction, 0.3)
+print result

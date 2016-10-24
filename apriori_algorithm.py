@@ -5,22 +5,29 @@ import itertools
 
 
 class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
-
     @staticmethod
     def run(transactions, minsup):
         all_frequent_itemsets = {}
-        frequent_itemsets = AprioriAlgorithm.create_frequent_1_large_itemsets(transactions,minsup)
-        for key,value in frequent_itemsets.iteritems():
-            all_frequent_itemsets[key] = value
+
+        frequent_itemsets = AprioriAlgorithm.generate_frequent_1_large_itemsets(transactions, minsup)
+        AprioriAlgorithm.__add_dictionary(all_frequent_itemsets, frequent_itemsets)
+
         while len(frequent_itemsets) > 0:
             candidates = AprioriAlgorithm.candidate_generate(sorted(frequent_itemsets))
-            frequent_itemsets = AprioriAlgorithm.create_frequent_itemsets(transactions,candidates, minsup)
-            for key,value in frequent_itemsets.iteritems():
-                all_frequent_itemsets[key] = value
+            frequent_itemsets = AprioriAlgorithm.generate_frequent_itemsets(transactions, candidates, minsup)
+            AprioriAlgorithm.__add_dictionary(all_frequent_itemsets, frequent_itemsets)
+
         return all_frequent_itemsets
 
     @staticmethod
-    def create_1_large_itemsets(transactions):
+    def __add_dictionary(dictonary1, dictionary2):
+        for key, value in dictionary2.iteritems():
+            dictonary1[key] = value
+
+        return dictonary1
+
+    @staticmethod
+    def __generate_1_large_itemsets(transactions):
         itemsets = {}
         for transaction in transactions:
             for item in transaction:
@@ -33,8 +40,8 @@ class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
         return itemsets
 
     @staticmethod
-    def create_frequent_1_large_itemsets(transactions, minsup):
-        itemsets_dictionary = AprioriAlgorithm.create_1_large_itemsets(transactions)
+    def generate_frequent_1_large_itemsets(transactions, minsup):
+        itemsets_dictionary = AprioriAlgorithm.__generate_1_large_itemsets(transactions)
         min_count = ceil(minsup * len(transactions))
 
         for key, value in itemsets_dictionary.items():
@@ -44,46 +51,48 @@ class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
         return itemsets_dictionary
 
     @staticmethod
-    def candidate_generate_join_step(itemsets):
+    def __candidate_generate_join_step(itemsets):
         # Convert each item in itemsets to tupple
-        if not isinstance(itemsets[0],tuple):
+        if not isinstance(itemsets[0], tuple):
             for index in range(len(itemsets)):
                 itemsets[index] = tuple(itemsets[index])
 
-        generated_candidates = list()
+        candidates = list()
         for index1, tupple1 in enumerate(itemsets):
             for index2, tupple2 in enumerate(itemsets):
                 if index2 > index1:
-                    # Two sets differ last element
+                    # Check two sets different from last element
+                    # If YES -> add to candidates
                     for index3 in range(len(tupple1)):
                         if index3 != (len(tupple1) - 1):
                             if tupple1[index3] != tupple2[index3]:
                                 break
                         else:
                             if tupple1[index3] != tupple2[index3]:
-                                generated_candidates.append(tupple1 + (tupple2[len(tupple2) - 1],))
-        return generated_candidates
+                                candidates.append(tupple1 + (tupple2[len(tupple2) - 1],))
+        return candidates
 
     @staticmethod
-    def candidate_generate_pruning_step(itemsets, generated_candidates):
-        #accepted_itemsets_list = list()
-        for candidate in generated_candidates:
+    def __candidate_generate_pruning_step(itemsets, candidates):
+        for candidate in candidates:
+            # Check any of "(k-1) candidate subsets" is not in itemsets F(k-1)
+            # If YES -> Remove from candidates
             subsets = set(itertools.combinations(candidate, len(candidate) - 1))
             for subset in subsets:
                 if not subset in itemsets:
-                    generated_candidates.remove(candidate)
+                    candidates.remove(candidate)
                     break
-        return generated_candidates
+        return candidates
 
     @staticmethod
     def candidate_generate(itemsets):
-        generated_candidates = AprioriAlgorithm\
-            .candidate_generate_join_step(itemsets)
-        return AprioriAlgorithm.candidate_generate_pruning_step(itemsets, generated_candidates)
+        generated_candidates = AprioriAlgorithm \
+            .__candidate_generate_join_step(itemsets)
+        return AprioriAlgorithm.__candidate_generate_pruning_step(itemsets, generated_candidates)
 
     @staticmethod
-    def create_frequent_itemsets(transactions, itemsets, minsup):
-        itemsets_dictionary = AprioriAlgorithm.create_itemsets_dictionary(transactions, itemsets)
+    def generate_frequent_itemsets(transactions, itemsets, minsup):
+        itemsets_dictionary = AprioriAlgorithm.__generate_itemsets_dictionary(transactions, itemsets)
         min_count = ceil(minsup * len(transactions))
 
         for key, value in itemsets_dictionary.items():
@@ -93,7 +102,7 @@ class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
         return itemsets_dictionary
 
     @staticmethod
-    def create_itemsets_dictionary(transactions, itemsets):
+    def __generate_itemsets_dictionary(transactions, itemsets):
         itemsets_dictionary = {}
         for transaction in transactions:
             for key in itemsets:
