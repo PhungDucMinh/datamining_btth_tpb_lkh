@@ -1,0 +1,1 @@
+Hiện đã làm xong hàm Candidate_Gen (file: "aprori_algorithm.py")
