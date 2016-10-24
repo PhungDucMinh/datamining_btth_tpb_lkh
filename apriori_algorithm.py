@@ -5,31 +5,43 @@ import itertools
 
 
 class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
-    def run(self, dict, minsup):
-        raise NotImplementedError
 
-    def create_1_item_set(self, transaction):
-        item_set_dictionary = {}
+    @staticmethod
+    def run(transactions, minsup):
+        all_frequent_itemsets = {}
+        frequent_itemsets = AprioriAlgorithm.create_frequent_1_large_itemsets(transactions,minsup)
+        for key,value in frequent_itemsets.iteritems():
+            all_frequent_itemsets[key] = value
+        while len(frequent_itemsets) > 0:
+            candidates = AprioriAlgorithm.candidate_generate(sorted(frequent_itemsets))
+            frequent_itemsets = AprioriAlgorithm.create_frequent_itemsets(transactions,candidates, minsup)
+            for key,value in frequent_itemsets.iteritems():
+                all_frequent_itemsets[key] = value
+        return all_frequent_itemsets
 
-        for transaction in transaction:
+    @staticmethod
+    def create_1_large_itemsets(transactions):
+        itemsets = {}
+        for transaction in transactions:
             for item in transaction:
-                key = str((item))
-                if not key in item_set_dictionary:
-                    item_set_dictionary[key] = 1
+                key = (item,)
+                if not key in itemsets:
+                    itemsets[key] = 1
                 else:
-                    item_set_dictionary[key] += 1
+                    itemsets[key] += 1
 
-        return item_set_dictionary
+        return itemsets
 
-    def create_frequent_1_item_set(self, transactions, minsup):
-        item_set_dictionary = self.create_1_item_set(transactions)
+    @staticmethod
+    def create_frequent_1_large_itemsets(transactions, minsup):
+        itemsets_dictionary = AprioriAlgorithm.create_1_large_itemsets(transactions)
         min_count = ceil(minsup * len(transactions))
 
-        for key, value in item_set_dictionary.items():
+        for key, value in itemsets_dictionary.items():
             if value < min_count:
-                del item_set_dictionary[key]
+                del itemsets_dictionary[key]
 
-        return item_set_dictionary
+        return itemsets_dictionary
 
     @staticmethod
     def candidate_generate_join_step(itemsets):
@@ -68,3 +80,27 @@ class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
         generated_candidates = AprioriAlgorithm\
             .candidate_generate_join_step(itemsets)
         return AprioriAlgorithm.candidate_generate_pruning_step(itemsets, generated_candidates)
+
+    @staticmethod
+    def create_frequent_itemsets(transactions, itemsets, minsup):
+        itemsets_dictionary = AprioriAlgorithm.create_itemsets_dictionary(transactions, itemsets)
+        min_count = ceil(minsup * len(transactions))
+
+        for key, value in itemsets_dictionary.items():
+            if value < min_count:
+                del itemsets_dictionary[key]
+
+        return itemsets_dictionary
+
+    @staticmethod
+    def create_itemsets_dictionary(transactions, itemsets):
+        itemsets_dictionary = {}
+        for transaction in transactions:
+            for key in itemsets:
+                if set(key).issubset(set(transaction)):
+                    if not key in itemsets_dictionary:
+                        itemsets_dictionary[key] = 1
+                    else:
+                        itemsets_dictionary[key] += 1
+
+        return itemsets_dictionary
