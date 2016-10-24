@@ -7,7 +7,8 @@ class AprioriAlgorithmTests(unittest.TestCase):
         self.transaction_list = {(1, 2, 3, 4), (1, 2, 4), (1, 2),
                                  (2, 3, 4), (2, 3), (3, 4), (2, 4)}
         self.itemsets = [(1,2,3), (1,2,4), (1,3,4), (1,3,5), (2,3,4)]
-
+        self.expected_join_step_candidates = [(1, 2, 3, 4), (1, 3, 4, 5)]
+        self.expected_pruning_step_candidates = [(1,2,3,4)]
     def tearDown(self):
         self.transaction_list.clear()
         self.transaction_list = None
@@ -26,8 +27,14 @@ class AprioriAlgorithmTests(unittest.TestCase):
 
     def test_candidate_generate_join_step(self):
         result = AprioriAlgorithm.candidate_generate_join_step(self.itemsets)
-        expect = [(1,2,3,4), (1,3,4,5)]
-        self.assertTrue(result == expect)
+        #expect = [(1,2,3,4), (1,3,4,5)]
+        self.assertTrue(result == self.expected_join_step_candidates)
+
+    def test_candidate_generate_pruning_step(self):
+        result = AprioriAlgorithm\
+            .candidate_generate_pruning_step(self.itemsets, self.expected_join_step_candidates)
+        self.assertTrue(result,self.expected_pruning_step_candidates)
+
 
 
 test_suit = unittest.TestLoader().loadTestsFromTestCase(AprioriAlgorithmTests)
