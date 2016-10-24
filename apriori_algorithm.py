@@ -113,3 +113,14 @@ class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
                         itemsets_dictionary[key] += 1
 
         return itemsets_dictionary
+
+    @staticmethod
+    def generate_result_content(frequent_items, transactions_size):
+        content = ""
+        keys  = sorted(frequent_items)
+        for key in keys:
+            content += str("{0:.2f}".format(float(frequent_items[key])/ transactions_size))
+            for value in key:
+                content += " " + str(value)
+            content += "\n"
+        return content
