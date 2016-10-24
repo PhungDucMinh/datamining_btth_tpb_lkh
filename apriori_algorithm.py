@@ -33,6 +33,11 @@ class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
 
     @staticmethod
     def candidate_generate_join_step(itemsets):
+        # Convert each item in itemsets to tupple
+        if not isinstance(itemsets[0],tuple):
+            for index in range(len(itemsets)):
+                itemsets[index] = tuple(itemsets[index])
+
         generated_candidates = list()
         for index1, tupple1 in enumerate(itemsets):
             for index2, tupple2 in enumerate(itemsets):
@@ -47,7 +52,6 @@ class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
                                 generated_candidates.append(tupple1 + (tupple2[len(tupple2) - 1],))
         return generated_candidates
 
-    # Implement here!
     @staticmethod
     def candidate_generate_pruning_step(itemsets, generated_candidates):
         #accepted_itemsets_list = list()
