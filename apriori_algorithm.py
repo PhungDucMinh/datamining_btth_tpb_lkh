@@ -1,6 +1,7 @@
 from math import ceil
 
 from  frequent_itemsets_algorithm import IFrequentItemSetsAlgorithm
+import itertools
 
 
 class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
@@ -51,13 +52,11 @@ class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
     def candidate_generate_pruning_step(itemsets, generated_candidates):
         #accepted_itemsets_list = list()
         for candidate in generated_candidates:
-            delete = True
-            for itemset in itemsets:
-                if set(itemset).issubset(set(candidate)):
-                    delete = False
+            subsets = set(itertools.combinations(candidate, len(candidate) - 1))
+            for subset in subsets:
+                if not subset in itemsets:
+                    generated_candidates.remove(candidate)
                     break
-            if delete:
-                generated_candidates.remove(candidate)
         return generated_candidates
 
     @staticmethod

@@ -6,6 +6,7 @@ class AprioriAlgorithmTests(unittest.TestCase):
     def setUp(self):
         self.transaction_list = {(1, 2, 3, 4), (1, 2, 4), (1, 2),
                                  (2, 3, 4), (2, 3), (3, 4), (2, 4)}
+        self.itemsets = [(1,2,3), (1,2,4), (1,3,4), (1,3,5), (2,3,4)]
 
     def tearDown(self):
         self.transaction_list.clear()
@@ -22,6 +23,11 @@ class AprioriAlgorithmTests(unittest.TestCase):
         # Assert
         expected_dictionary = {1: 3, 2: 6, 3: 4, 4: 5}
         self.assertTrue(result_dictionary, expected_dictionary)
+
+    def test_candidate_generate_join_step(self):
+        result = AprioriAlgorithm.candidate_generate_join_step(self.itemsets)
+        expect = [(1,2,3,4), (1,3,4,5)]
+        self.assertTrue(result == expect)
 
 
 test_suit = unittest.TestLoader().loadTestsFromTestCase(AprioriAlgorithmTests)
