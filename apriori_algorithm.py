@@ -103,9 +103,16 @@ class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
 
     @staticmethod
     def __generate_itemsets_dictionary(transactions, itemsets):
+        """
+        This function is slow as shit, need to be update 24/11 11h30
+        :param transactions: transaction list
+        :param itemsets: F (k-1) itemsets
+        :return: dictionary<key,value> where key is tupple(items), value = support.count
+        """
         itemsets_dictionary = {}
         for transaction in transactions:
             for key in itemsets:
+                # This is the slow method => update soon :v
                 if set(key).issubset(set(transaction)):
                     if not key in itemsets_dictionary:
                         itemsets_dictionary[key] = 1
