@@ -64,6 +64,21 @@ class FileIO:
         file_output = open(file_name, mode)
         file_output.write(content)
         file_output.close()
+
+
+    @staticmethod
+    def read_as_frozensets(file_name, mode):
+        return FileIO.__read(file_name, mode, FileIO.__as_frozensets)
+
+    @staticmethod
+    def __as_frozensets(line):
+        string_of_numbers = filter(None, re.split(" |\n", line))
+        numbers = list()
+        # Make list of string_number become list of number
+        for string_number in string_of_numbers:
+            numbers.append(int(string_number))
+        # Add to transaction
+        return frozenset(numbers)
 """
 data = ReadData.read_as_number_list_type("retail.dat", "r")
 data2 = ReadData.read_as_string_tupple_type("retail.dat", "r")

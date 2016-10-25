@@ -40,8 +40,7 @@ class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
         return itemsets
 
     @staticmethod
-    def generate_frequent_1_large_itemsets(transactions, minsup):
-        itemsets_dictionary = AprioriAlgorithm.__generate_1_large_itemsets(transactions)
+    def __remove_itemsets_not_enough_support(transactions, itemsets_dictionary, minsup):
         min_count = ceil(minsup * len(transactions))
 
         for key, value in itemsets_dictionary.items():
@@ -51,25 +50,32 @@ class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
         return itemsets_dictionary
 
     @staticmethod
+    def generate_frequent_1_large_itemsets(transactions, minsup):
+        itemsets_dictionary = AprioriAlgorithm.__generate_1_large_itemsets(transactions)
+        return AprioriAlgorithm.__remove_itemsets_not_enough_support(transactions, itemsets_dictionary, minsup)
+
+    @staticmethod
     def __candidate_generate_join_step(itemsets):
         # Convert each item in itemsets to tupple
-        if not isinstance(itemsets[0], tuple):
-            for index in range(len(itemsets)):
-                itemsets[index] = tuple(itemsets[index])
+
+        # if not isinstance(itemsets[0], tuple):
+        #     for index in range(len(itemsets)):
+        #         itemsets[index] = tuple(itemsets[index])
 
         candidates = list()
-        for index1, tupple1 in enumerate(itemsets):
-            for index2, tupple2 in enumerate(itemsets):
+        for index1, itemset1 in enumerate(itemsets):
+            for index2, itemset2 in enumerate(itemsets):
                 if index2 > index1:
                     # Check two sets different from last element
                     # If YES -> add to candidates
-                    for index3 in range(len(tupple1)):
-                        if index3 != (len(tupple1) - 1):
-                            if tupple1[index3] != tupple2[index3]:
+                    for index3 in range(len(itemset1)):
+                        if index3 != (len(itemset1) - 1):
+                            if itemset1[index3] != itemset2[index3]:
                                 break
                         else:
-                            if tupple1[index3] != tupple2[index3]:
-                                candidates.append(tupple1 + (tupple2[len(tupple2) - 1],))
+                            if itemset1[index3] != itemset2[index3]:
+                                candidates.append(itemset1 + (itemset2[len(itemset2) - 1],))
+                                #candidates.append(frozenset(itemset1 + itemset2))
         return candidates
 
     @staticmethod
@@ -91,42 +97,36 @@ class AprioriAlgorithm(IFrequentItemSetsAlgorithm):
         return AprioriAlgorithm.__candidate_generate_pruning_step(itemsets, generated_candidates)
 
     @staticmethod
-    def generate_frequent_itemsets(transactions, itemsets, minsup):
-        itemsets_dictionary = AprioriAlgorithm.__generate_itemsets_dictionary(transactions, itemsets)
-        min_count = ceil(minsup * len(transactions))
-
-        for key, value in itemsets_dictionary.items():
-            if value < min_count:
-                del itemsets_dictionary[key]
-
-        return itemsets_dictionary
+    def generate_frequent_itemsets(transactions, candidates, minsup):
+        itemsets_dictionary = AprioriAlgorithm.__generate_itemsets_dictionary(transactions, candidates)
+        return AprioriAlgorithm.__remove_itemsets_not_enough_support(transactions, itemsets_dictionary, minsup)
 
     @staticmethod
-    def __generate_itemsets_dictionary(transactions, itemsets):
+    def __generate_itemsets_dictionary(transactions, candidates):
         """
-        This function is slow as shit, need to be update 24/11 11h30
+        This function is slow, need to be update 24/11 11h30
         :param transactions: transaction list
-        :param itemsets: F (k-1) itemsets
+        :param candidates: F (k-1) itemsets
         :return: dictionary<key,value> where key is tupple(items), value = support.count
         """
         itemsets_dictionary = {}
-        for transaction in transactions:
-            for key in itemsets:
-                # This is the slow method => update soon :v
-                if set(key).issubset(set(transaction)):
-                    if not key in itemsets_dictionary:
-                        itemsets_dictionary[key] = 1
-                    else:
-                        itemsets_dictionary[key] += 1
 
+        for transaction in transactions:
+            for candidate in candidates:
+                # This is the slow method => update soon :v
+                if frozenset(candidate).issubset(transaction):
+                    if not itemsets_dictionary.has_key(candidate):
+                        itemsets_dictionary[candidate] = 1
+                    else:
+                        itemsets_dictionary[candidate] += 1
         return itemsets_dictionary
 
     @staticmethod
     def generate_result_content(frequent_items, transactions_size):
         content = ""
-        keys  = sorted(frequent_items)
+        keys = sorted(frequent_items)
         for key in keys:
-            content += str("{0:.2f}".format(float(frequent_items[key])/ transactions_size))
+            content += str("{0:.2f}".format(float(frequent_items[key]) / transactions_size))
             for value in key:
                 content += " " + str(value)
             content += "\n"
