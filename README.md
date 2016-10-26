@@ -1,2 +1,2 @@
-Hiện đã làm xong hàm Apriori Algorithm
-Phần còn thiếu AssociateRulesGen.
+Hiện đã làm xong Associate_Rules
+Cần cài đặt đọc file input và viết output cho Associate_Rules
