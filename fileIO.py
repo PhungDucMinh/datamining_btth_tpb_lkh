@@ -79,6 +79,23 @@ class FileIO:
             numbers.append(int(string_number))
         # Add to transaction
         return frozenset(numbers)
+
+    @staticmethod
+    def read_frequent_itemsets(file_name, mode):
+        file = open(file_name,mode)
+        lines = file.readlines()
+
+        frequent_itemset_dict = {}
+        for line in lines:
+            strs = filter(None, re.split(" |\n", line))
+            value = float(strs.pop(0))
+            numbers = []
+            for item in strs:
+                numbers.append(int(item))
+            key = tuple(sorted(numbers))
+            frequent_itemset_dict[key] = value
+        return frequent_itemset_dict
+
 """
 data = ReadData.read_as_number_list_type("retail.dat", "r")
 data2 = ReadData.read_as_string_tupple_type("retail.dat", "r")

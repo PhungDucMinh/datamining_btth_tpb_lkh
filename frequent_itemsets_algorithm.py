@@ -24,7 +24,6 @@ class IFrequentItemSetsAlgorithm:
 
         return IFrequentItemSetsAlgorithm.generate_associate_rules_specify_itemset_len(frequent_itemsets_dictionary, minconf, itemset_len)
 
-
     @staticmethod
     def generate_associate_rules_specify_itemset_len(frequent_itemsets_dictionary, minconf, itemset_len):
         frequent_k_large_itemsets_dictionary = IFrequentItemSetsAlgorithm \
@@ -46,6 +45,19 @@ class IFrequentItemSetsAlgorithm:
                 (frequent_itemsets_dictionary, minconf, key, association_rules, right_side_itemsets, 1)
         return association_rules
 
+    @staticmethod
+    def associate_rules_to_string(associate_rules):
+        content = ""
+        for key in sorted(associate_rules):
+            value = associate_rules[key]
+            content += "{0:.2f}".format(value)
+            for item in key[0]:
+                content += " " + str(item)
+            content += " ->"
+            for item in key[1]:
+                content += " " + str(item)
+            content += "\n"
+        return content
 
     @staticmethod
     def __generate_frequent_k_itemsets(frequent_itemsets_dictionary, k):
